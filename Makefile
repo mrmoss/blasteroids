@@ -1,12 +1,12 @@
 CXX=g++
-OPTS=-O -std=c++11
-CFLAGS=$(OPTS) -Wall
+OPTS=-O
+CFLAGS=$(OPTS) -Wall -std=c++11
 LIBS=-lpthread
 
 all: server
 
-backend: server.cpp
-	$(CXX) $(CFLAGS) $< -o $@ $(LIBS)
+server: server.cpp msl/time.cpp msl/webserver.cpp msl/mongoose/mongoose.c
+	$(CXX) $(CFLAGS) $^ -o $@ $(LIBS)
 
 clean:
 	- rm server
