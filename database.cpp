@@ -31,7 +31,7 @@ int main()
 		if(!server.good())
 		{
 			std::cout<<"Error starting database."<<std::endl;
-			return 0;
+			continue;
 		}
 
 		std::cout<<"Database started."<<std::endl;
@@ -49,6 +49,7 @@ int main()
 			if(!(backup<<msl::serialize(database_copy)))
 			{
 				std::cout<<"Could not write backup file named \""<<backup_filename<<"\"."<<std::endl;
+				backup.close();
 				continue;
 			}
 
