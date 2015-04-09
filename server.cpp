@@ -1,4 +1,5 @@
 #include <iostream>
+#include <mutex>
 #include <string>
 #include <vector>
 #include "msl/json.hpp"
@@ -7,6 +8,7 @@
 #include "msl/webserver.hpp"
 
 bool client_func(const mg_connection& connection,enum mg_event event);
+std::mutex root_lock;
 msl::json root;
 
 std::vector<std::string> get_paths(std::string str)
@@ -85,6 +87,12 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 			{
 				switch(json[ii].type())
 				{
+					case Json::arrayValue:
+						std::cout<<"    Adding \""<<ii<<"\" as array."<<std::endl;
+						break;
+					case Json::objectValue:
+						std::cout<<"    Adding \""<<ii<<"\" as object."<<std::endl;
+						break;
 					case Json::nullValue:
 						std::cout<<"    Adding \""<<ii<<"\" as null."<<std::endl;
 						break;
@@ -103,19 +111,15 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 					case Json::booleanValue:
 						std::cout<<"    Adding \""<<ii<<"\" as bool."<<std::endl;
 						break;
-					case Json::arrayValue:
-						std::cout<<"    Adding \""<<ii<<"\" as array."<<std::endl;
-						break;
-					case Json::objectValue:
-						std::cout<<"    Adding \""<<ii<<"\" as object."<<std::endl;
-						break;
 					default:
 						std::cout<<"    Skipping \""<<ii<<"\" with invalid type."<<std::endl;
 						continue;
 						break;
 				}
 
+				root_lock.lock();
 				root[ii]=json[ii];
+				root_lock.unlock();
 			}
 
 			return true;
@@ -129,7 +133,9 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 
 			std::cout<<"  Parsing JSON Path:"<<std::endl;
 
+			root_lock.lock();
 			auto obj=root;
+			root_lock.unlock();
 
 			for(auto path:paths)
 			{
@@ -137,6 +143,12 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 
 				switch(obj.type())
 				{
+					case Json::arrayValue:
+						std::cout<<"    Getting \""<<path<<"\" as array."<<std::endl;
+						break;
+					case Json::objectValue:
+						std::cout<<"    Getting \""<<path<<"\" as object."<<std::endl;
+						break;
 					case Json::nullValue:
 						std::cout<<"    Getting \""<<path<<"\" as null."<<std::endl;
 						break;
@@ -154,12 +166,6 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 						break;
 					case Json::booleanValue:
 						std::cout<<"    Getting \""<<path<<"\" as bool."<<std::endl;
-						break;
-					case Json::arrayValue:
-						std::cout<<"    Getting \""<<path<<"\" as array."<<std::endl;
-						break;
-					case Json::objectValue:
-						std::cout<<"    Getting \""<<path<<"\" as object."<<std::endl;
 						break;
 					default:
 						std::cout<<"    Exiting \""<<path<<"\" with invalid type."<<std::endl;
