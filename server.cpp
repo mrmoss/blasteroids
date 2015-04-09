@@ -1,41 +1,43 @@
 #include <iostream>
+#include <string>
+#include <vector>
 #include "msl/json.hpp"
+#include "msl/string.hpp"
 #include "msl/time.hpp"
 #include "msl/webserver.hpp"
 
-bool client_func(const mg_connection& connection,enum mg_event event)
+bool client_func(const mg_connection& connection,enum mg_event event);
+msl::json root;
+
+std::vector<std::string> get_paths(std::string str)
 {
-	if(event==MG_AUTH)
-		return true;
-	if(event!=MG_REQUEST)
-		return false;
+	str+='/';
+	std::vector<std::string> paths;
+	std::string temp="";
 
-	try
+	for(size_t ii=0;ii<str.size();++ii)
 	{
-		std::cout<<connection.uri<<std::endl;
-	}
-	catch(std::exception& e)
-	{
-		std::cout<<"\terror:  "<<e.what()<<std::endl;
-	}
-	catch(...)
-	{
-		std::cout<<"\terror:  Unknown error occured."<<std::endl;
+		if(str[ii]=='/')
+		{
+			if(temp.size()>0)
+				paths.push_back(temp);
+
+			temp="";
+		}
+		else
+		{
+			temp+=str[ii];
+		}
 	}
 
-	return false;
+	return paths;
 }
 
 int main()
 {
-	auto json=msl::string_to_json("{\"project\":\"rapidjson\",\"stars\":10}");
-	json["stars"].SetInt(json["stars"].GetInt()+1);
-	std::cout<<msl::json_to_string(json)<<std::endl;
-
 	while(true)
 	{
 		msl::webserver_t server(client_func,"0.0.0.0:8080","web");
-
 		server.open();
 
 		if(!server.good())
@@ -53,4 +55,130 @@ int main()
 	}
 
 	return 0;
+}
+
+bool client_func(const mg_connection& connection,enum mg_event event)
+{
+	if(event==MG_AUTH)
+		return true;
+	if(event!=MG_REQUEST)
+		return false;
+
+	std::string uri=connection.uri;
+	std::string json_set_prefix="/json_set/";
+	std::string json_get_prefix="/json_get/";
+
+	std::cout<<"Request:  "<<uri<<std::endl;
+
+	try
+	{
+		if(msl::starts_with(uri,json_set_prefix)&&uri.size()>json_set_prefix.size())
+		{
+			std::cout<<"  Set JSON Request."<<std::endl;
+
+			std::string json_set_str=uri.substr(json_set_prefix.size(),uri.size()-json_set_prefix.size());
+			msl::json json=msl::deserialize(json_set_str);
+
+			std::cout<<"  Parsing JSON Object:"<<std::endl;
+
+			for(auto ii:json.getMemberNames())
+			{
+				switch(json[ii].type())
+				{
+					case Json::nullValue:
+						std::cout<<"    Adding \""<<ii<<"\" as null."<<std::endl;
+						break;
+					case Json::intValue:
+						std::cout<<"    Adding \""<<ii<<"\" as int."<<std::endl;
+						break;
+					case Json::uintValue:
+						std::cout<<"    Adding \""<<ii<<"\" as uint."<<std::endl;
+						break;
+					case Json::realValue:
+						std::cout<<"    Adding \""<<ii<<"\" as real."<<std::endl;
+						break;
+					case Json::stringValue:
+						std::cout<<"    Adding \""<<ii<<"\" as string."<<std::endl;
+						break;
+					case Json::booleanValue:
+						std::cout<<"    Adding \""<<ii<<"\" as bool."<<std::endl;
+						break;
+					case Json::arrayValue:
+						std::cout<<"    Adding \""<<ii<<"\" as array."<<std::endl;
+						break;
+					case Json::objectValue:
+						std::cout<<"    Adding \""<<ii<<"\" as object."<<std::endl;
+						break;
+					default:
+						std::cout<<"    Skipping \""<<ii<<"\" with invalid type."<<std::endl;
+						continue;
+						break;
+				}
+
+				root[ii]=json[ii];
+			}
+
+			return true;
+		}
+		else if(msl::starts_with(uri,json_get_prefix)&&uri.size()>json_get_prefix.size())
+		{
+			std::cout<<"  Get JSON Request."<<std::endl;
+
+			std::string json_get_str=uri.substr(json_get_prefix.size(),uri.size()-json_get_prefix.size());
+			std::vector<std::string> paths=get_paths(json_get_str);
+
+			std::cout<<"  Parsing JSON Path:"<<std::endl;
+
+			auto obj=root;
+
+			for(auto path:paths)
+			{
+				obj=obj[path];
+
+				switch(obj.type())
+				{
+					case Json::nullValue:
+						std::cout<<"    Getting \""<<path<<"\" as null."<<std::endl;
+						break;
+					case Json::intValue:
+						std::cout<<"    Getting \""<<path<<"\" as int."<<std::endl;
+						break;
+					case Json::uintValue:
+						std::cout<<"    Getting \""<<path<<"\" as uint."<<std::endl;
+						break;
+					case Json::realValue:
+						std::cout<<"    Getting \""<<path<<"\" as real."<<std::endl;
+						break;
+					case Json::stringValue:
+						std::cout<<"    Getting \""<<path<<"\" as string."<<std::endl;
+						break;
+					case Json::booleanValue:
+						std::cout<<"    Getting \""<<path<<"\" as bool."<<std::endl;
+						break;
+					case Json::arrayValue:
+						std::cout<<"    Getting \""<<path<<"\" as array."<<std::endl;
+						break;
+					case Json::objectValue:
+						std::cout<<"    Getting \""<<path<<"\" as object."<<std::endl;
+						break;
+					default:
+						std::cout<<"    Exiting \""<<path<<"\" with invalid type."<<std::endl;
+						return false;
+				}
+			}
+
+			msl::client_reply(connection,msl::serialize(obj),"application/javascript");
+			return true;
+		}
+	}
+	catch(std::exception& e)
+	{
+		std::cout<<"\terror:  "<<e.what()<<std::endl;
+	}
+	catch(...)
+	{
+		std::cout<<"\terror:  Unknown error occured."<<std::endl;
+	}
+
+	return false;
 }
