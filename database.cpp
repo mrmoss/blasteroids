@@ -143,14 +143,14 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 			std::cout<<"  Parsing JSON Path:"<<std::endl;
 
 			database_lock.lock();
-			auto database_copy=database;
+			auto json_get_object=database;
 			database_lock.unlock();
 
 			for(auto path:paths)
 			{
-				database_copy=database_copy[path];
+				json_get_object=json_get_object[path];
 
-				switch(database_copy.type())
+				switch(json_get_object.type())
 				{
 					case Json::arrayValue:
 						std::cout<<"    Getting \""<<path<<"\" as array."<<std::endl;
@@ -182,7 +182,7 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 				}
 			}
 
-			msl::client_reply(connection,msl::serialize(database_copy),"application/javascript");
+			msl::client_reply(connection,msl::serialize(json_get_object),"application/javascript");
 			return true;
 		}
 	}
