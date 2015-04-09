@@ -188,11 +188,11 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 	}
 	catch(std::exception& e)
 	{
-		std::cout<<"\terror:  "<<e.what()<<std::endl;
+		std::cout<<"\tError:  "<<e.what()<<std::endl;
 	}
 	catch(...)
 	{
-		std::cout<<"\terror:  Unknown error occured."<<std::endl;
+		std::cout<<"\tError:  Unknown error occured."<<std::endl;
 	}
 
 	return false;
