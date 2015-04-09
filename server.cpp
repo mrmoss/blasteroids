@@ -46,13 +46,13 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 
 	std::string uri=connection.uri;
 	std::string json_set_prefix="/json_set/";
-	std::string json_get_prefix="/json_get/";
+	std::string json_get_prefix="/json_get";
 
 	std::cout<<"Request:  "<<uri<<std::endl;
 
 	try
 	{
-		if(msl::starts_with(uri,json_set_prefix)&&uri.size()>json_set_prefix.size())
+		if(msl::starts_with(uri,json_set_prefix))
 		{
 			std::cout<<"  Set JSON Request."<<std::endl;
 
@@ -102,7 +102,7 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 
 			return true;
 		}
-		else if(msl::starts_with(uri,json_get_prefix)&&uri.size()>json_get_prefix.size())
+		else if(msl::starts_with(uri,json_get_prefix))
 		{
 			std::cout<<"  Get JSON Request."<<std::endl;
 
