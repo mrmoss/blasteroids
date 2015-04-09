@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <mutex>
 #include <string>
@@ -7,8 +8,12 @@
 #include "msl/time.hpp"
 #include "msl/webserver.hpp"
 
+std::string host_address="0.0.0.0:8080";
+std::string host_webroot="web";
 std::mutex root_lock;
 msl::json root;
+std::string backup_filename="database.json";
+size_t backup_interval_ms=2000;
 
 bool client_func(const mg_connection& connection,enum mg_event event);
 std::vector<std::string> get_paths(std::string str);
@@ -17,19 +22,40 @@ int main()
 {
 	while(true)
 	{
-		msl::webserver_t server(client_func,"0.0.0.0:8080","web");
+		msl::webserver_t server(client_func,host_address,host_webroot);
 		server.open();
+
+		std::cout<<"Attempting to host database on address"<<server.address()<<
+			" from folder \""<<server.webroot()<<"\"."<<std::endl;
 
 		if(!server.good())
 		{
-			std::cout<<":("<<std::endl;
+			std::cout<<"Error starting database."<<std::endl;
 			return 0;
 		}
 
-		std::cout<<":)"<<std::endl;
+		std::cout<<"Database started."<<std::endl;
 
 		while(server.good())
-			msl::delay_ms(10);
+		{
+			msl::delay_ms(backup_interval_ms);
+
+			std::ofstream backup(backup_filename);
+
+			root_lock.lock();
+			auto copy=root;
+			root_lock.unlock();
+
+			if(!(backup<<msl::serialize(root)))
+			{
+				std::cout<<"Could not open backup file named \""<<backup_filename<<"\"."<<std::endl;
+				continue;
+			}
+
+			std::cout<<"Wrote backup file named \""<<backup_filename<<"\"."<<std::endl;
+
+			backup.close();
+		}
 
 		std::cout<<"T_T"<<std::endl;
 	}
