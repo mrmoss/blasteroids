@@ -10,10 +10,10 @@
 
 std::string host_address="0.0.0.0:8080";
 std::string host_webroot="web";
-std::mutex root_lock;
-msl::json root;
+std::mutex database_lock;
+msl::json database;
 std::string backup_filename="database.json";
-size_t backup_interval_ms=2000;
+size_t backup_interval_ms=5000;
 
 bool client_func(const mg_connection& connection,enum mg_event event);
 std::vector<std::string> get_paths(std::string str);
@@ -42,11 +42,11 @@ int main()
 
 			std::ofstream backup(backup_filename);
 
-			root_lock.lock();
-			auto copy=root;
-			root_lock.unlock();
+			database_lock.lock();
+			auto database_copy=database;
+			database_lock.unlock();
 
-			if(!(backup<<msl::serialize(root)))
+			if(!(backup<<msl::serialize(database_copy)))
 			{
 				std::cout<<"Could not write backup file named \""<<backup_filename<<"\"."<<std::endl;
 				continue;
@@ -121,9 +121,9 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 						break;
 				}
 
-				root_lock.lock();
-				root[ii]=json[ii];
-				root_lock.unlock();
+				database_lock.lock();
+				database[ii]=json[ii];
+				database_lock.unlock();
 			}
 
 			return true;
@@ -137,15 +137,15 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 
 			std::cout<<"  Parsing JSON Path:"<<std::endl;
 
-			root_lock.lock();
-			auto obj=root;
-			root_lock.unlock();
+			database_lock.lock();
+			auto database_copy=database;
+			database_lock.unlock();
 
 			for(auto path:paths)
 			{
-				obj=obj[path];
+				database_copy=database_copy[path];
 
-				switch(obj.type())
+				switch(database_copy.type())
 				{
 					case Json::arrayValue:
 						std::cout<<"    Getting \""<<path<<"\" as array."<<std::endl;
@@ -177,7 +177,7 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 				}
 			}
 
-			msl::client_reply(connection,msl::serialize(obj),"application/javascript");
+			msl::client_reply(connection,msl::serialize(database_copy),"application/javascript");
 			return true;
 		}
 	}
