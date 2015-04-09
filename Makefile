@@ -8,7 +8,7 @@ all: database simulator
 database: database.cpp msl/json.cpp msl/string.cpp msl/time.cpp msl/webserver.cpp msl/mongoose/mongoose.c msl/jsoncpp/json_reader.cpp msl/jsoncpp/json_tool.h msl/jsoncpp/json_value.cpp msl/jsoncpp/json_writer.cpp
 	$(CXX) $(CFLAGS) $^ -o $@ $(LIBS)
 
-simulator: simulator.cpp msl/json.cpp msl/string.cpp msl/time.cpp msl/webserver.cpp msl/mongoose/mongoose.c msl/jsoncpp/json_reader.cpp msl/jsoncpp/json_tool.h msl/jsoncpp/json_value.cpp msl/jsoncpp/json_writer.cpp
+simulator: simulator.cpp msl/json.cpp msl/socket.cpp msl/time.cpp msl/jsoncpp/json_reader.cpp msl/jsoncpp/json_tool.h msl/jsoncpp/json_value.cpp msl/jsoncpp/json_writer.cpp
 	$(CXX) $(CFLAGS) $^ -o $@ $(LIBS)
 
 clean:
