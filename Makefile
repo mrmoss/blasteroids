@@ -5,8 +5,8 @@ LIBS=-lpthread
 
 all: server
 
-server: server.cpp msl/time.cpp msl/webserver.cpp msl/mongoose/mongoose.c
+server: server.cpp msl/json.cpp msl/time.cpp msl/webserver.cpp msl/mongoose/mongoose.c
 	$(CXX) $(CFLAGS) $^ -o $@ $(LIBS)
 
 clean:
-	- rm server
+	- rm -f server
