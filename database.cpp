@@ -25,7 +25,7 @@ int main()
 		msl::webserver_t server(client_func,host_address,host_webroot);
 		server.open();
 
-		std::cout<<"Attempting to host database on address"<<server.address()<<
+		std::cout<<"Attempting to host database on address "<<server.address()<<
 			" from folder \""<<server.webroot()<<"\"."<<std::endl;
 
 		if(!server.good())
@@ -48,7 +48,7 @@ int main()
 
 			if(!(backup<<msl::serialize(root)))
 			{
-				std::cout<<"Could not open backup file named \""<<backup_filename<<"\"."<<std::endl;
+				std::cout<<"Could not write backup file named \""<<backup_filename<<"\"."<<std::endl;
 				continue;
 			}
 
@@ -57,7 +57,7 @@ int main()
 			backup.close();
 		}
 
-		std::cout<<"T_T"<<std::endl;
+		std::cout<<"Database stopped."<<std::endl;
 	}
 
 	return 0;
