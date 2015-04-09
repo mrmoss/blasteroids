@@ -7,33 +7,11 @@
 #include "msl/time.hpp"
 #include "msl/webserver.hpp"
 
-bool client_func(const mg_connection& connection,enum mg_event event);
 std::mutex root_lock;
 msl::json root;
 
-std::vector<std::string> get_paths(std::string str)
-{
-	str+='/';
-	std::vector<std::string> paths;
-	std::string temp="";
-
-	for(size_t ii=0;ii<str.size();++ii)
-	{
-		if(str[ii]=='/')
-		{
-			if(temp.size()>0)
-				paths.push_back(temp);
-
-			temp="";
-		}
-		else
-		{
-			temp+=str[ii];
-		}
-	}
-
-	return paths;
-}
+bool client_func(const mg_connection& connection,enum mg_event event);
+std::vector<std::string> get_paths(std::string str);
 
 int main()
 {
@@ -187,4 +165,28 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 	}
 
 	return false;
+}
+
+std::vector<std::string> get_paths(std::string str)
+{
+	str+='/';
+	std::vector<std::string> paths;
+	std::string temp="";
+
+	for(size_t ii=0;ii<str.size();++ii)
+	{
+		if(str[ii]=='/')
+		{
+			if(temp.size()>0)
+				paths.push_back(temp);
+
+			temp="";
+		}
+		else
+		{
+			temp+=str[ii];
+		}
+	}
+
+	return paths;
 }
