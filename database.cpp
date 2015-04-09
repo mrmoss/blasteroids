@@ -14,7 +14,7 @@ std::mutex database_lock;
 msl::json database;
 std::string backup_filename="database.json";
 size_t backup_interval_ms=5000;
-size_t restart_interval_ms=500;
+size_t restart_interval_ms=1000;
 
 bool client_func(const mg_connection& connection,enum mg_event event);
 std::vector<std::string> get_paths(std::string str);
