@@ -5,7 +5,6 @@
 #include "msl/xmlhttp.hpp"
 
 std::string database_address="127.0.0.1:8080";
-std::string json_get_request="/json_get/";
 std::string json_set_request="/json_set/";
 msl::json simulation;
 
@@ -25,8 +24,6 @@ int main()
 		simulation_update();
 		msl::delay_ms(20);
 	}
-
-	//print_request(database_address,json_get_request);
 
 	return 0;
 }
@@ -61,10 +58,10 @@ void simulation_initialize()
 {
 	simulation["asteroids"]=Json::arrayValue;
 
-	for(int ii=0;ii<10;++ii)
+	for(int ii=0;ii<100;++ii)
 	{
-		simulation["asteroids"][ii]["pos"]["x"]=random_double(-1000,1000);
-		simulation["asteroids"][ii]["pos"]["y"]=random_double(-1000,1000);
+		simulation["asteroids"][ii]["pos"]["x"]=random_double(100,200);
+		simulation["asteroids"][ii]["pos"]["y"]=random_double(100,200);
 		simulation["asteroids"][ii]["speed"]["x"]=random_double(-1,1);
 		simulation["asteroids"][ii]["speed"]["y"]=random_double(-1,1);
 	}
@@ -76,5 +73,14 @@ void simulation_update()
 	{
 		asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()+asteroid["speed"]["x"].asDouble();
 		asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+asteroid["speed"]["x"].asDouble();
+
+		while(asteroid["pos"]["x"].asDouble()>480)
+			asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()-480;
+		while(asteroid["pos"]["x"].asDouble()<0)
+			asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()+480;
+		while(asteroid["pos"]["y"].asDouble()>480)
+			asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()-480;
+		while(asteroid["pos"]["y"].asDouble()<0)
+			asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+480;
 	}
 }

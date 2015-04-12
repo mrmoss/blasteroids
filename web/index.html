@@ -1,8 +1,77 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+
 <html>
 	<head>
-		<title>Blasteroids!</title>
-		<h1>Blasteroids!</h1>
+		<script type="text/javascript" src="https://processing.org/javascript/processing.js"></script>
+
+		<script type="text/javascript">
+			var simulation={};
+
+			function make_request()
+			{
+				var xmlhttp=new XMLHttpRequest();
+
+				xmlhttp.onreadystatechange=function()
+				{
+					if(xmlhttp.readyState==4&&xmlhttp.status==200)
+					{
+						try
+						{
+							var test=JSON.parse(xmlhttp.responseText);
+							simulation=test;
+						}
+						catch(e)
+						{}
+
+						make_request();
+					}
+				}
+
+				xmlhttp.open("GET","/json_get/",true);
+				xmlhttp.send(null);
+			}
+
+			make_request();
+		</script>
+
+		<script type="application/processing" data-processing-target="canvas">
+			double canvas_width=document.getElementById("canvas").width;
+			double canvas_height=document.getElementById("canvas").height;
+
+			void setup()
+			{
+				size(canvas_width,canvas_height);
+				frameRate(120);
+			}
+
+			void update()
+			{
+			}
+
+			void draw()
+			{
+				update();
+				background(160,160,160);
+
+				if(simulation.asteroids!=null)
+				{
+					for(int ii=0;ii<simulation.asteroids.length;++ii)
+					{
+						stroke(#000000);
+						fill(#ff0000);
+						ellipse(simulation.asteroids[ii].pos.x,simulation.asteroids[ii].pos.y,40,40);
+					}
+				}
+			}
+		</script>
 	</head>
+
 	<body>
+		<title>Blasteroids!</title>
+		<center>
+			<h1>Blasteroids!</h1>
+			<canvas id="canvas" width="480px" height="480px" style="border:1px solid #000000;"/>
+		</center>
 	</body>
 </html>
