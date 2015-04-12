@@ -72,7 +72,7 @@ void simulation_update()
 	for(auto& asteroid:simulation["asteroids"])
 	{
 		asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()+asteroid["speed"]["x"].asDouble();
-		asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+asteroid["speed"]["x"].asDouble();
+		asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+asteroid["speed"]["y"].asDouble();
 
 		while(asteroid["pos"]["x"].asDouble()>480)
 			asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()-480;
