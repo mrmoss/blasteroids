@@ -10,6 +10,7 @@
 
 			function make_request()
 			{
+				//console.log("test");
 				var xmlhttp=new XMLHttpRequest();
 
 				xmlhttp.onreadystatechange=function()
@@ -44,11 +45,33 @@
 			void setup()
 			{
 				size(canvas_width,canvas_height);
-				frameRate(120);
+				frameRate(100);
 			}
 
 			void update()
 			{
+				if(simulation!=null&&simulation.asteroids!=null)
+				{
+					for(int ii=0;ii<simulation.asteroids.length;++ii)
+					{
+						simulation.asteroids[ii]["pos"]["x"]=simulation.asteroids[ii]["pos"]["x"]+simulation.asteroids[ii]["speed"]["x"];
+						simulation.asteroids[ii]["pos"]["y"]=simulation.asteroids[ii]["pos"]["y"]+simulation.asteroids[ii]["speed"]["y"];
+						simulation.asteroids[ii]["pos"]["r"]=simulation.asteroids[ii]["pos"]["r"]+simulation.asteroids[ii]["speed"]["r"];
+
+						if(simulation.asteroids[ii]["pos"]["x"]>480)
+							simulation.asteroids[ii]["pos"]["x"]=simulation.asteroids[ii]["pos"]["x"]-480;
+						if(simulation.asteroids[ii]["pos"]["x"]<0)
+							simulation.asteroids[ii]["pos"]["x"]=simulation.asteroids[ii]["pos"]["x"]+480;
+						if(simulation.asteroids[ii]["pos"]["y"]>480)
+							simulation.asteroids[ii]["pos"]["y"]=simulation.asteroids[ii]["pos"]["y"]-480;
+						if(simulation.asteroids[ii]["pos"]["y"]<0)
+							simulation.asteroids[ii]["pos"]["y"]=simulation.asteroids[ii]["pos"]["y"]+480;
+						if(simulation.asteroids[ii]["pos"]["r"]>3.14159265*2)
+							simulation.asteroids[ii]["pos"]["r"]=simulation.asteroids[ii]["pos"]["r"]-3.14159265*2;
+						if(simulation.asteroids[ii]["pos"]["r"]<0)
+							simulation.asteroids[ii]["pos"]["r"]=simulation.asteroids[ii]["pos"]["r"]+3.14159265*2;
+					}
+				}
 			}
 
 			void draw()
@@ -56,7 +79,7 @@
 				update();
 				background(0,0,0);
 
-				if(simulation.asteroids!=null)
+				if(simulation!=null&&simulation.asteroids!=null)
 				{
 					for(int ii=0;ii<simulation.asteroids.length;++ii)
 					{
