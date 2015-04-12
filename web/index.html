@@ -13,17 +13,36 @@
 				//console.log("test");
 				var xmlhttp=new XMLHttpRequest();
 
+				xmlhttp.onerror=function()
+				{
+					console.log("Error");
+					make_request();
+				};
+
+				xmlhttp.ontimeout=function()
+				{
+					console.log("Error:  Timeout");
+					make_request();
+				};
+
 				xmlhttp.onreadystatechange=function()
 				{
-					if(xmlhttp.readyState==4&&xmlhttp.status==200)
+					if(xmlhttp.readyState==4)
 					{
-						try
+						if(xmlhttp.status==200)
 						{
-							var test=JSON.parse(xmlhttp.responseText);
-							simulation=test;
+							try
+							{
+								var test=JSON.parse(xmlhttp.responseText);
+								simulation=test;
+							}
+							catch(e)
+							{}
 						}
-						catch(e)
-						{}
+						else
+						{
+							console.log("Error:  Ready state is "+xmlhttp.readyState+".");
+						}
 
 						make_request();
 					}
