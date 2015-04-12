@@ -3,7 +3,7 @@
 
 <html>
 	<head>
-		<script type="text/javascript" src="https://processing.org/javascript/processing.js"></script>
+		<script type="text/javascript" src="js/processing.js"></script>
 
 		<script type="text/javascript">
 			var simulation={};
@@ -19,6 +19,7 @@
 						try
 						{
 							var test=JSON.parse(xmlhttp.responseText);
+							console.log(xmlhttp.responseText);
 							simulation=test;
 						}
 						catch(e)

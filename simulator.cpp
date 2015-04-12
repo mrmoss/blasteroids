@@ -58,7 +58,7 @@ void simulation_initialize()
 {
 	simulation["asteroids"]=Json::arrayValue;
 
-	for(int ii=0;ii<100;++ii)
+	for(int ii=0;ii<10;++ii)
 	{
 		simulation["asteroids"][ii]["pos"]["x"]=random_double(100,200);
 		simulation["asteroids"][ii]["pos"]["y"]=random_double(100,200);
