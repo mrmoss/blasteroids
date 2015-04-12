@@ -19,7 +19,6 @@
 						try
 						{
 							var test=JSON.parse(xmlhttp.responseText);
-							console.log(xmlhttp.responseText);
 							simulation=test;
 						}
 						catch(e)
@@ -40,6 +39,8 @@
 			double canvas_width=document.getElementById("canvas").width;
 			double canvas_height=document.getElementById("canvas").height;
 
+			var sprite_lookup={};
+
 			void setup()
 			{
 				size(canvas_width,canvas_height);
@@ -53,15 +54,27 @@
 			void draw()
 			{
 				update();
-				background(160,160,160);
+				background(0,0,0);
 
 				if(simulation.asteroids!=null)
 				{
 					for(int ii=0;ii<simulation.asteroids.length;++ii)
 					{
-						stroke(#000000);
-						fill(#ff0000);
-						ellipse(simulation.asteroids[ii].pos.x,simulation.asteroids[ii].pos.y,40,40);
+						if(sprite_lookup[simulation.asteroids[ii].sprite]==null)
+						{
+							sprite_lookup[simulation.asteroids[ii].sprite]=new PImage();
+							sprite_lookup[simulation.asteroids[ii].sprite]=
+								loadImage(simulation.asteroids[ii].sprite);
+						}
+
+						pushMatrix();
+						translate(simulation.asteroids[ii].pos.x,simulation.asteroids[ii].pos.y);
+						rotate(simulation.asteroids[ii].pos.r);
+						translate(-sprite_lookup[simulation.asteroids[ii].sprite].width/2,
+							-sprite_lookup[simulation.asteroids[ii].sprite].height/2);
+						image(sprite_lookup[simulation.asteroids[ii].sprite],
+							0,0);
+						popMatrix();
 					}
 				}
 			}

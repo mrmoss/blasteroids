@@ -1,14 +1,23 @@
 #include <iostream>
 #include <random>
+#include <string>
+#include <vector>
 #include "msl/json.hpp"
 #include "msl/time.hpp"
 #include "msl/xmlhttp.hpp"
 
 std::string database_address="127.0.0.1:8080";
 std::string json_set_request="/json_set/";
+std::vector<std::string> asteroid_sprites
+{
+	"images/asteroid_small.png",
+	"images/asteroid_medium.png",
+	"images/asteroid_large.png"
+};
 msl::json simulation;
 
 void print_request(const std::string& host,const std::string& request);
+int random_int(const int min,const int max);
 double random_double(const double min,const double max);
 void simulation_initialize();
 void simulation_update();
@@ -22,7 +31,7 @@ int main()
 		auto setting=json_set_request+msl::serialize(simulation);
 		print_request(database_address,setting);
 		simulation_update();
-		msl::delay_ms(20);
+		msl::delay_ms(10);
 	}
 
 	return 0;
@@ -46,6 +55,14 @@ void print_request(const std::string& host,const std::string& request)
 	std::cout<<"  ["<<ret.data<<"]"<<std::endl;
 }
 
+int random_int(const int min,const int max)
+{
+	std::uniform_int_distribution<int> uniform(min,max);
+	std::random_device rand_dev;
+	std::mt19937 rand_engine(rand_dev());
+	return uniform(rand_engine);
+}
+
 double random_double(const double min,const double max)
 {
 	std::uniform_real_distribution<double> uniform(min,max);
@@ -60,10 +77,13 @@ void simulation_initialize()
 
 	for(int ii=0;ii<10;++ii)
 	{
+		simulation["asteroids"][ii]["sprite"]=asteroid_sprites[random_int(0,2)];
 		simulation["asteroids"][ii]["pos"]["x"]=random_double(100,200);
 		simulation["asteroids"][ii]["pos"]["y"]=random_double(100,200);
+		simulation["asteroids"][ii]["pos"]["r"]=random_double(0,3.14159265*2);
 		simulation["asteroids"][ii]["speed"]["x"]=random_double(-1,1);
 		simulation["asteroids"][ii]["speed"]["y"]=random_double(-1,1);
+		simulation["asteroids"][ii]["speed"]["r"]=random_double(-0.2,0.2);
 	}
 }
 
@@ -73,6 +93,7 @@ void simulation_update()
 	{
 		asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()+asteroid["speed"]["x"].asDouble();
 		asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+asteroid["speed"]["y"].asDouble();
+		asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()+asteroid["speed"]["r"].asDouble();
 
 		while(asteroid["pos"]["x"].asDouble()>480)
 			asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()-480;
@@ -82,5 +103,9 @@ void simulation_update()
 			asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()-480;
 		while(asteroid["pos"]["y"].asDouble()<0)
 			asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+480;
+		while(asteroid["pos"]["r"].asDouble()>3.14159265*2)
+			asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()-3.14159265*2;
+		while(asteroid["pos"]["r"].asDouble()<0)
+			asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()+3.14159265*2;
 	}
 }
