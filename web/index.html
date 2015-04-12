@@ -15,13 +15,13 @@
 
 				xmlhttp.onerror=function()
 				{
-					console.log("Error");
+					console.log(new Date()+" Error");
 					make_request();
 				};
 
 				xmlhttp.ontimeout=function()
 				{
-					console.log("Error:  Timeout");
+					console.log(new Date()+" Error:  Timeout");
 					make_request();
 				};
 
@@ -41,7 +41,7 @@
 						}
 						else
 						{
-							console.log("Error:  Ready state is "+xmlhttp.readyState+".");
+							console.log(new Date()+" Error:  Ready state is "+xmlhttp.readyState+".");
 						}
 
 						make_request();
