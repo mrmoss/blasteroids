@@ -31,7 +31,7 @@ int main()
 		auto setting=json_set_request+msl::serialize(simulation);
 		print_request(database_address,setting);
 		simulation_update();
-		msl::delay_ms(10);
+		msl::delay_ms(20);
 	}
 
 	return 0;
