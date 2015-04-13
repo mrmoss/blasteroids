@@ -61,24 +61,28 @@
 		<script type="application/processing" data-processing-target="canvas">
 			double canvas_width=document.getElementById("canvas").width;
 			double canvas_height=document.getElementById("canvas").height;
+			double old_time=millis();
 
 			var sprite_lookup={};
 
 			void setup()
 			{
 				size(canvas_width,canvas_height);
-				frameRate(50);
 			}
 
 			void update()
 			{
+				double new_time=millis();
+				double dt=(new_time-old_time)/1000*50;
+				old_time=new_time;
+
 				if(simulation!=null&&simulation.asteroids!=null)
 				{
 					for(int ii=0;ii<simulation.asteroids.length;++ii)
 					{
-						simulation.asteroids[ii]["pos"]["x"]=simulation.asteroids[ii]["pos"]["x"]+simulation.asteroids[ii]["speed"]["x"];
-						simulation.asteroids[ii]["pos"]["y"]=simulation.asteroids[ii]["pos"]["y"]+simulation.asteroids[ii]["speed"]["y"];
-						simulation.asteroids[ii]["pos"]["r"]=simulation.asteroids[ii]["pos"]["r"]+simulation.asteroids[ii]["speed"]["r"];
+						simulation.asteroids[ii]["pos"]["x"]+=simulation.asteroids[ii]["speed"]["x"]*dt;
+						simulation.asteroids[ii]["pos"]["y"]+=simulation.asteroids[ii]["speed"]["y"]*dt;
+						simulation.asteroids[ii]["pos"]["r"]+=simulation.asteroids[ii]["speed"]["r"]*dt;
 
 						if(simulation.asteroids[ii]["pos"]["x"]>480)
 							simulation.asteroids[ii]["pos"]["x"]=simulation.asteroids[ii]["pos"]["x"]-480;
