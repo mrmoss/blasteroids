@@ -7,22 +7,32 @@
 
 		<script type="text/javascript">
 			var simulation={};
+			var timeouts=new Array();
+
+			function clear_intervals()
+			{
+				for(var ii=0;ii<timeouts.length;++ii)
+					clearInterval(timeouts[0]);
+
+				timeouts.length=0;
+			}
 
 			function make_request()
 			{
-				//console.log("test");
 				var xmlhttp=new XMLHttpRequest();
 
 				xmlhttp.onerror=function()
 				{
 					console.log(new Date()+" Error");
-					make_request();
+					clear_intervals();
+					timeouts.push(setTimeout(make_request,1));
 				};
 
 				xmlhttp.ontimeout=function()
 				{
 					console.log(new Date()+" Error:  Timeout");
-					make_request();
+					clear_intervals();
+					timeouts.push(setTimeout(make_request,1));
 				};
 
 				xmlhttp.onreadystatechange=function()
@@ -35,6 +45,10 @@
 							{
 								var test=JSON.parse(xmlhttp.responseText);
 								simulation=test;
+
+								if(document.getElementById("timer")!=null)
+									document.getElementById("timer").innerHTML=
+										"Last Connection:  "+new Date();
 							}
 							catch(e)
 							{}
@@ -44,7 +58,8 @@
 							console.log(new Date()+" Error:  Ready state is "+xmlhttp.readyState+".");
 						}
 
-						make_request();
+						clear_intervals();
+						timeouts.push(setTimeout(make_request,1));
 					}
 				}
 
@@ -52,7 +67,7 @@
 				xmlhttp.send(null);
 			}
 
-			make_request();
+			timeouts.push(setTimeout(make_request,5));
 		</script>
 
 		<script type="application/processing" data-processing-target="canvas">
@@ -127,7 +142,18 @@
 		<title>Blasteroids!</title>
 		<center>
 			<h1>Blasteroids!</h1>
-			<canvas id="canvas" width="480px" height="480px" style="border:1px solid #000000;"/>
+			<table>
+				<tr>
+					<td>
+						<canvas id="canvas" width="480px" height="480px" style="border:1px solid #000000;"/>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div id="timer"></div>
+					</td>
+				</tr>
+			</table>
 		</center>
 	</body>
 </html>
