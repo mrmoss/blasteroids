@@ -15,13 +15,11 @@
 				xmlhttp.onerror=function()
 				{
 					console.log(new Date()+" Error");
-					timeouts.push(setTimeout(make_request,5000));
 				};
 
 				xmlhttp.ontimeout=function()
 				{
 					console.log(new Date()+" Error:  Timeout");
-					timeouts.push(setTimeout(make_request,5000));
 				};
 
 				xmlhttp.onreadystatechange=function()
