@@ -92,7 +92,7 @@ void simulation_update()
 	{
 		asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()+asteroid["speed"]["x"].asDouble();
 		asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+asteroid["speed"]["y"].asDouble();
-		//asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()+asteroid["speed"]["r"].asDouble();
+		asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()+asteroid["speed"]["r"].asDouble();
 
 		while(asteroid["pos"]["x"].asDouble()>480)
 			asteroid["pos"]["x"]=asteroid["pos"]["x"].asDouble()-480;
@@ -102,9 +102,9 @@ void simulation_update()
 			asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()-480;
 		while(asteroid["pos"]["y"].asDouble()<0)
 			asteroid["pos"]["y"]=asteroid["pos"]["y"].asDouble()+480;
-		/*while(asteroid["pos"]["r"].asDouble()>3.14159265*2)
+		while(asteroid["pos"]["r"].asDouble()>3.14159265*2)
 			asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()-3.14159265*2;
 		while(asteroid["pos"]["r"].asDouble()<0)
-			asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()+3.14159265*2;*/
+			asteroid["pos"]["r"]=asteroid["pos"]["r"].asDouble()+3.14159265*2;
 	}
 }
