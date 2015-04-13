@@ -7,15 +7,6 @@
 
 		<script type="text/javascript">
 			var simulation={};
-			var timeouts=new Array();
-
-			function clear_intervals()
-			{
-				for(var ii=0;ii<timeouts.length;++ii)
-					clearInterval(timeouts[0]);
-
-				timeouts.length=0;
-			}
 
 			function make_request()
 			{
@@ -24,15 +15,13 @@
 				xmlhttp.onerror=function()
 				{
 					console.log(new Date()+" Error");
-					clear_intervals();
-					timeouts.push(setTimeout(make_request,1));
+					timeouts.push(setTimeout(make_request,5000));
 				};
 
 				xmlhttp.ontimeout=function()
 				{
 					console.log(new Date()+" Error:  Timeout");
-					clear_intervals();
-					timeouts.push(setTimeout(make_request,1));
+					timeouts.push(setTimeout(make_request,5000));
 				};
 
 				xmlhttp.onreadystatechange=function()
@@ -58,8 +47,7 @@
 							console.log(new Date()+" Error:  Ready state is "+xmlhttp.readyState+".");
 						}
 
-						clear_intervals();
-						timeouts.push(setTimeout(make_request,1));
+						make_request();
 					}
 				}
 
@@ -67,7 +55,7 @@
 				xmlhttp.send(null);
 			}
 
-			timeouts.push(setTimeout(make_request,5));
+			make_request();
 		</script>
 
 		<script type="application/processing" data-processing-target="canvas">
