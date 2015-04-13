@@ -28,6 +28,34 @@ msl::http_response msl::get_request(const std::string& host,const std::string& r
 	return parse_http_response(response);
 }
 
+msl::http_response msl::post_request(const std::string& host,const std::string& request,const std::string& data)
+{
+	msl::http_response ret{"",{},""};
+	msl::tcp_socket_t client("0.0.0.0:0>"+host);
+	client.open();
+
+	if(!client.good())
+		return ret;
+
+	std::string request_header="POST "+request+" HTTP/1.1\r\n";
+	request_header+="Connection: close\r\n";
+	request_header+="Content-Length: "+std::to_string(data.size())+"\r\n";
+	request_header+="Content-Type: text/plain\r\n";
+	request_header+="\r\n";
+	request_header+=data;
+	client.write(request_header);
+
+	std::string response="";
+	uint8_t temp;
+
+	while(client.available()>=0&&client.read(&temp,1)==1)
+		response+=temp;
+
+	client.close();
+
+	return parse_http_response(response);
+}
+
 msl::http_response msl::parse_http_response(std::string response)
 {
 	msl::http_response ret{"",{},""};

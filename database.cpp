@@ -73,6 +73,7 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 	if(event!=MG_REQUEST)
 		return false;
 
+	std::string method=connection.request_method;
 	std::string request=connection.uri;
 	std::string json_set_prefix="/json_set/";
 	std::string json_get_prefix="/json_get";
@@ -83,10 +84,15 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 	{
 		if(msl::starts_with(request,json_set_prefix))
 		{
-			std::cout<<"  Set JSON Request."<<std::endl;
+			std::cout<<"  Set JSON "+method+" Request."<<std::endl;
 
-			std::string json_set_str=request.substr(json_set_prefix.size(),
-				request.size()-json_set_prefix.size());
+			std::string json_set_str=request.substr(json_set_prefix.size(),request.size()-json_set_prefix.size());
+
+			if(method=="POST")
+				json_set_str=std::string(connection.content,connection.content_len);
+
+			std::cout<<json_set_str<<std::endl;
+
 			msl::json json=msl::deserialize(json_set_str);
 
 			std::cout<<"  Parsing JSON Object:"<<std::endl;
@@ -134,11 +140,16 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 		}
 		else if(msl::starts_with(request,json_get_prefix))
 		{
-			std::cout<<"  Get JSON Request."<<std::endl;
+			std::cout<<"  Get JSON "+method+" Request."<<std::endl;
 
-			std::string json_get_str=request.substr(json_get_prefix.size(),
-				request.size()-json_get_prefix.size());
+			std::string json_get_str=request.substr(json_get_prefix.size(),request.size()-json_get_prefix.size());
+
+			if(method=="POST")
+				json_get_str=std::string(connection.content,connection.content_len);
+
 			std::vector<std::string> paths=get_paths(json_get_str);
+
+			std::cout<<json_get_str<<std::endl;
 
 			std::cout<<"  Parsing JSON Path:"<<std::endl;
 

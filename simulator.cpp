@@ -16,7 +16,7 @@ std::vector<std::string> asteroid_sprites
 };
 msl::json simulation;
 
-void print_request(const std::string& host,const std::string& request);
+void print_request(const std::string& host,const std::string& request,const std::string& data);
 int random_int(const int min,const int max);
 double random_double(const double min,const double max);
 void simulation_initialize();
@@ -28,8 +28,7 @@ int main()
 
 	while(true)
 	{
-		auto setting=json_set_request+msl::serialize(simulation);
-		print_request(database_address,setting);
+		print_request(database_address,json_set_request,msl::serialize(simulation));
 		simulation_update();
 		msl::delay_ms(20);
 	}
@@ -37,11 +36,11 @@ int main()
 	return 0;
 }
 
-void print_request(const std::string& host,const std::string& request)
+void print_request(const std::string& host,const std::string& request,const std::string& data)
 {
 	std::cout<<"Requesting \""<<request<<"\" from database at "<<host<<"."<<std::endl;
 
-	auto ret=msl::get_request(host,request);
+	auto ret=msl::post_request(host,request,data);
 
 	std::cout<<"Received:"<<std::endl;
 
@@ -75,7 +74,7 @@ void simulation_initialize()
 {
 	simulation["asteroids"]=Json::arrayValue;
 
-	for(int ii=0;ii<50;++ii)
+	for(int ii=0;ii<100;++ii)
 	{
 		simulation["asteroids"][ii]["sprite"]=asteroid_sprites[random_int(0,2)];
 		simulation["asteroids"][ii]["pos"]["x"]=random_double(100,200);

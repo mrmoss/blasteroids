@@ -16,6 +16,7 @@ namespace msl
 
 	http_response parse_http_response(std::string response);
 	http_response get_request(const std::string& host,const std::string& name);
+	http_response post_request(const std::string& host,const std::string& name,const std::string& data);
 }
 
 #endif
