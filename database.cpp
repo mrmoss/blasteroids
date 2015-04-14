@@ -136,6 +136,7 @@ bool client_func(const mg_connection& connection,enum mg_event event)
 				database_lock.unlock();
 			}
 
+			msl::client_reply(connection,"","text/plain");
 			return true;
 		}
 		else if(msl::starts_with(request,json_get_prefix))
